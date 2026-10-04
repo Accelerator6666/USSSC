@@ -1,0 +1,3 @@
+# USSSC
+
+Initial project bootstrap.

@@ -7,31 +7,169 @@
   </head>
   <body>
     <main class="shell">
-      <header>
-        <p class="eyebrow">USSSC</p>
-        <h1>U.S. Stock Settlement Cycle</h1>
-        <p class="sub">美股股票 / ETF 交割日期计算</p>
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">USSSC</p>
+          <h1>Settlement Dashboard</h1>
+          <p class="sub">美股交割记录、提醒与快速计算</p>
+        </div>
+        <span class="version">v0.4</span>
       </header>
 
-      <form id="calculator">
-        <label>
-          Trade Date
-          <input id="trade-date" name="tradeDate" type="date" required />
-        </label>
+      <nav class="tabs" aria-label="USSSC navigation">
+        <button type="button" class="tab is-active" data-view="dashboard">Dashboard</button>
+        <button type="button" class="tab" data-view="trades">Trades</button>
+        <button type="button" class="tab" data-view="calculator">Calculator</button>
+        <button type="button" class="tab" data-view="settings">Settings</button>
+      </nav>
 
-        <label>
-          Asset
-          <select id="asset-type" name="assetType">
-            <option value="equity">Stock</option>
-            <option value="etf">ETF</option>
-          </select>
-        </label>
+      <section class="view is-active" data-panel="dashboard">
+        <div class="stats" aria-label="Settlement summary">
+          <article class="stat"><span>Records</span><strong id="stat-records">0</strong></article>
+          <article class="stat"><span>Pending</span><strong id="stat-pending">0</strong></article>
+          <article class="stat"><span>Today</span><strong id="stat-today">0</strong></article>
+          <article class="stat"><span>Settled</span><strong id="stat-settled">0</strong></article>
+        </div>
 
-        <button type="submit">Calculate Settlement</button>
-      </form>
+        <section class="card">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">NEXT</p>
+              <h2>Upcoming settlements</h2>
+            </div>
+            <button type="button" class="text-button" id="go-add-trade">+ Add trade</button>
+          </div>
+          <div id="upcoming-list" class="list"></div>
+        </section>
+      </section>
 
-      <section id="result" class="result" hidden></section>
-      <section id="error" class="error" hidden></section>
+      <section class="view" data-panel="trades">
+        <section class="card">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">LOCAL</p>
+              <h2>Add trade record</h2>
+            </div>
+          </div>
+
+          <form id="trade-form" class="form-grid">
+            <label class="span-2">
+              Symbol
+              <input id="trade-symbol" name="symbol" type="text" inputmode="latin" autocomplete="off" maxlength="12" placeholder="QCOM" required />
+            </label>
+
+            <label>
+              Side
+              <select id="trade-side" name="side">
+                <option value="buy">BUY</option>
+                <option value="sell">SELL</option>
+              </select>
+            </label>
+
+            <label>
+              Asset
+              <select id="trade-asset" name="assetType">
+                <option value="equity">Stock</option>
+                <option value="etf">ETF</option>
+              </select>
+            </label>
+
+            <label>
+              Trade Date
+              <input id="trade-date" name="tradeDate" type="date" required />
+            </label>
+
+            <label>
+              Quantity
+              <input id="trade-quantity" name="quantity" type="number" min="0.000001" step="any" placeholder="100" required />
+            </label>
+
+            <label>
+              Price (optional)
+              <input id="trade-price" name="price" type="number" min="0" step="any" placeholder="168.50" />
+            </label>
+
+            <button class="primary span-2" type="submit">Save & calculate settlement</button>
+          </form>
+          <p id="trade-message" class="message" hidden></p>
+        </section>
+
+        <section class="card">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">HISTORY</p>
+              <h2>Local trade records</h2>
+            </div>
+          </div>
+          <div id="trade-list" class="list"></div>
+        </section>
+      </section>
+
+      <section class="view" data-panel="calculator">
+        <section class="card">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">QUICK</p>
+              <h2>Settlement calculator</h2>
+            </div>
+          </div>
+
+          <form id="calculator" class="form-grid">
+            <label>
+              Trade Date
+              <input id="calc-trade-date" name="tradeDate" type="date" required />
+            </label>
+
+            <label>
+              Asset
+              <select id="calc-asset-type" name="assetType">
+                <option value="equity">Stock</option>
+                <option value="etf">ETF</option>
+              </select>
+            </label>
+
+            <button class="primary span-2" type="submit">Calculate settlement</button>
+          </form>
+
+          <section id="result" class="result" hidden></section>
+          <section id="error" class="error" hidden></section>
+        </section>
+      </section>
+
+      <section class="view" data-panel="settings">
+        <section class="card">
+          <div class="section-heading">
+            <div>
+              <p class="kicker">REMINDERS</p>
+              <h2>Settlement notifications</h2>
+            </div>
+          </div>
+
+          <form id="settings-form" class="settings-form">
+            <label class="toggle-row">
+              <span>
+                <strong>Enable settlement reminders</strong>
+                <small>通知仅由本机浏览器扩展生成。</small>
+              </span>
+              <input id="reminders-enabled" type="checkbox" />
+            </label>
+
+            <label>
+              Reminder time (local time)
+              <input id="reminder-time" type="time" required />
+            </label>
+
+            <button class="primary" type="submit">Save settings</button>
+          </form>
+          <p id="settings-message" class="message" hidden></p>
+        </section>
+
+        <section class="card privacy-card">
+          <p class="kicker">PRIVACY</p>
+          <h2>Local-first</h2>
+          <p>交易记录保存在 <code>chrome.storage.local</code>，当前版本不会上传到 USSSC 服务器或第三方服务。</p>
+        </section>
+      </section>
 
       <footer>
         Verified calendar: 2024–2026 · Educational tool only

@@ -25,6 +25,7 @@ USSSC 不只是“交易日 + 1”的日期计算器。核心设计把 **交易�
 - **本机结算提醒**：Chrome alarms + notifications
 - **提醒时间设置**：使用浏览器所在设备的本地时间
 - Vitest 核心规则测试
+- GitHub Actions 自动测试、构建和打包
 
 ## Local-first
 
@@ -130,10 +131,49 @@ notifications
 
 不要求访问任意网页内容，也不要求远程主机权限。
 
+## CI / Release
+
+`.github/workflows/build-release.yml` 会在 push 到 `main`、Pull Request、手动运行以及 `v*` 标签时执行：
+
+```text
+Install
+  ↓
+Test
+  ↓
+Build
+  ↓
+Validate versions/output
+  ↓
+USSSC-vX.Y.Z.zip
+  ↓
+SHA-256 checksum
+```
+
+普通构建会把 ZIP 和 `.sha256` 文件保存为 GitHub Actions Artifact 30 天。
+
+发布正式版本时，在通过验证的 `main` 提交上创建与 `package.json` / Manifest 完全一致的标签，例如：
+
+```bash
+git tag v0.4.0
+git push origin v0.4.0
+```
+
+标签构建通过后，workflow 会自动创建或更新对应 GitHub Release，并附加：
+
+```text
+USSSC-v0.4.0.zip
+USSSC-v0.4.0.zip.sha256
+```
+
+版本号不一致时 CI 会直接失败，避免错误版本被发布。
+
 ## Monorepo
 
 ```text
 USSSC/
+├── .github/
+│   └── workflows/
+│       └── build-release.yml
 ├── apps/
 │   └── extension/
 │       ├── public/

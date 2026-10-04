@@ -111,6 +111,7 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         shell: bash
         run: |
           set -euo pipefail
@@ -119,11 +120,12 @@ jobs:
           test -f "$ZIP"
           test -f "$SHA"
 
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" "$ZIP" "$SHA" --clobber
+          if gh release view "$GITHUB_REF_NAME" --repo "$GH_REPO" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$ZIP" "$SHA" --clobber --repo "$GH_REPO"
           else
             gh release create "$GITHUB_REF_NAME" \
               "$ZIP" "$SHA" \
+              --repo "$GH_REPO" \
               --title "USSSC ${GITHUB_REF_NAME}" \
               --generate-notes
           fi

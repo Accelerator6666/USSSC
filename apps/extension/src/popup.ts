@@ -56,9 +56,8 @@ const reminderTime = requiredElement<HTMLInputElement>("#reminder-time");
 const settingsMessage = requiredElement<HTMLElement>("#settings-message");
 const goAddTrade = requiredElement<HTMLButtonElement>("#go-add-trade");
 
-const today = localISODate();
-tradeDate.value = today;
-calcTradeDate.value = today;
+tradeDate.value = localISODate();
+calcTradeDate.value = localISODate();
 
 function showView(name: string): void {
   for (const tab of tabs) {
@@ -95,6 +94,12 @@ function formatNumber(value: number): string {
   return new Intl.NumberFormat(undefined, { maximumFractionDigits: 6 }).format(value);
 }
 
+function stateLabel(state: ReturnType<typeof getSettlementState>): string {
+  if (state === "today") return "SETTLES TODAY";
+  if (state === "settled") return "EST. SETTLED";
+  return "PENDING";
+}
+
 function renderTradeCard(trade: StoredTrade, allowDelete: boolean): HTMLElement {
   const card = document.createElement("article");
   card.className = "trade-row";
@@ -116,7 +121,7 @@ function renderTradeCard(trade: StoredTrade, allowDelete: boolean): HTMLElement 
 
   const stateBadge = document.createElement("span");
   stateBadge.className = `state state-${state}`;
-  stateBadge.textContent = state === "today" ? "SETTLES TODAY" : state.toUpperCase();
+  stateBadge.textContent = stateLabel(state);
 
   titleLine.append(symbol, side, stateBadge);
 
@@ -126,7 +131,7 @@ function renderTradeCard(trade: StoredTrade, allowDelete: boolean): HTMLElement 
 
   const settlement = document.createElement("p");
   settlement.className = "settlement-line";
-  settlement.textContent = `${trade.cycle} → ${trade.settlementDate}`;
+  settlement.textContent = `${trade.cycle} → expected ${trade.settlementDate}`;
 
   main.append(titleLine, meta, settlement);
   card.append(main);
@@ -226,7 +231,7 @@ tradeForm.addEventListener("submit", (event) => {
         symbol,
         side: tradeSide.value as TradeSide,
         quantity,
-        price: parsedPrice,
+        ...(parsedPrice === undefined ? {} : { price: parsedPrice }),
         assetType: tradeAsset.value as AssetType,
         tradeDate: settlement.tradeDate,
         settlementDate: settlement.settlementDate,
@@ -235,7 +240,7 @@ tradeForm.addEventListener("submit", (event) => {
       };
 
       await saveTrade(trade);
-      showMessage(tradeMessage, `${symbol} saved · settlement ${trade.settlementDate}`);
+      showMessage(tradeMessage, `${symbol} saved · expected settlement ${trade.settlementDate}`);
 
       tradeSymbol.value = "";
       tradeQuantity.value = "";
@@ -253,7 +258,10 @@ tradeForm.addEventListener("submit", (event) => {
 });
 
 tradeList.addEventListener("click", (event) => {
-  const button = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-trade-id]");
+  const target = event.target;
+  if (!(target instanceof Element)) return;
+
+  const button = target.closest<HTMLButtonElement>("[data-trade-id]");
   if (!button?.dataset.tradeId) return;
 
   void (async () => {
@@ -277,7 +285,7 @@ function renderResult(result: SettlementResult): void {
 
   const settlement = document.createElement("div");
   const settlementLabel = document.createElement("span");
-  settlementLabel.textContent = "Settlement";
+  settlementLabel.textContent = "Expected settlement";
   const settlementValue = document.createElement("strong");
   settlementValue.textContent = result.settlementDate;
   settlement.append(settlementLabel, settlementValue);

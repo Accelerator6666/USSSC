@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "npm run build -w @usssc/core && npm run build -w @usssc/extension",
-    "test": "npm run test -w @usssc/core",
+    "test": "npm run test -w @usssc/core && npm run test -w @usssc/extension",
     "check": "npm run build && npm run test"
   },
   "devDependencies": {

@@ -1,0 +1,12 @@
+{
+  "name": "@usssc/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@usssc/core": "0.1.0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "USSSC — U.S. Stock Settlement Cycle",
+  "version": "0.1.0",
+  "description": "Calculate U.S. stock and ETF settlement dates using verified trading and settlement calendars.",
+  "action": {
+    "default_title": "USSSC",
+    "default_popup": "popup.html"
+  }
+}

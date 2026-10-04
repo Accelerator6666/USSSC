@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USSSC</title>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <p class="eyebrow">USSSC</p>
+        <h1>U.S. Stock Settlement Cycle</h1>
+        <p class="sub">美股股票 / ETF 交割日期计算</p>
+      </header>
+
+      <form id="calculator">
+        <label>
+          Trade Date
+          <input id="trade-date" name="tradeDate" type="date" required />
+        </label>
+
+        <label>
+          Asset
+          <select id="asset-type" name="assetType">
+            <option value="equity">Stock</option>
+            <option value="etf">ETF</option>
+          </select>
+        </label>
+
+        <button type="submit">Calculate Settlement</button>
+      </form>
+
+      <section id="result" class="result" hidden></section>
+      <section id="error" class="error" hidden></section>
+
+      <footer>
+        Verified calendar: 2024–2026 · Educational tool only
+      </footer>
+    </main>
+
+    <script type="module" src="/src/popup.ts"></script>
+  </body>
+</html>

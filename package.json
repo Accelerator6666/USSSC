@@ -1,0 +1,20 @@
+{
+  "name": "usssc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @usssc/core && npm run build -w @usssc/extension",
+    "test": "npm run test -w @usssc/core",
+    "check": "npm run build && npm run test"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0",
+    "vitest": "^3.2.4"
+  }
+}
